@@ -1,0 +1,66 @@
+# Git Commit Skill 配置
+
+skill_info:
+  name: git-commit
+  version: 1.0.0
+  description: "分析 Git 改动并生成 conventional commit 信息，默认自动提交并推送"
+  author: "xiemuhou"
+  category: "git"
+
+modes:
+  default: "auto"
+  auto:
+    auto_stage: true
+    auto_stage_untracked: true
+    auto_split: true
+    auto_commit: true
+    auto_push: true
+  review:
+    prompt_stage: true
+    prompt_untracked: true
+    prompt_split: true
+    prompt_commit: true
+    prompt_push: true
+
+commit_types:
+  feat: "新增功能"
+  fix: "缺陷修复"
+  docs: "文档与注释"
+  style: "风格/格式（不改语义）"
+  refactor: "重构（不新增功能、不修缺陷）"
+  perf: "性能优化"
+  test: "新增/修复测试"
+  chore: "构建/工具/杂务"
+  ci: "CI/CD 配置与脚本"
+  revert: "回滚提交"
+
+emoji_map:
+  feat: "✨"
+  fix: "🐛"
+  docs: "📝"
+  style: "🎨"
+  refactor: "♻️"
+  perf: "⚡️"
+  test: "✅"
+  chore: "🔧"
+  ci: "👷"
+  revert: "⏪️"
+
+split_thresholds:
+  max_lines: 300
+  max_dirs: 5
+  max_files: 20
+
+message_constraints:
+  max_subject_length: 72
+  max_body_lines: 10
+  max_body_items: 3
+
+# 提交信息语言：AI 运行时自动检测
+# 检测优先级：用户指定 > 最近提交语言 > 系统 locale
+language:
+  default: "zh"
+  detection:
+    - "user_override"
+    - "recent_commits"
+    - "os_locale"
