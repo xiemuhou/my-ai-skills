@@ -38,10 +38,21 @@ metadata:
 
 ### 阶段 1: 定位安装脚本
 
-找到当前仓库中的安装脚本：
+找到当前仓库中的安装脚本。优先使用远程安装器（无需克隆仓库），本地安装器作为备选：
 
-```
-<repo-root>/install-xmh-skills/scripts/install.py
+| 场景 | 脚本路径 |
+|------|----------|
+| 远程安装（推荐） | `https://raw.githubusercontent.com/xiemuhou/my-ai-skills/main/install/install.py` |
+| 本地安装 | `<repo-root>/install-xmh-skills/scripts/install.py` |
+
+**如果用户还未克隆仓库**，指导用户使用远程安装：
+
+```bash
+# macOS / Linux
+curl -fsSL https://raw.githubusercontent.com/xiemuhou/my-ai-skills/main/install/install.py | python3
+
+# Windows PowerShell
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/xiemuhou/my-ai-skills/main/install/install.py" -OutFile "$env:TEMP\xmh-install.py"; python "$env:TEMP\xmh-install.py"
 ```
 
 ### 阶段 2: 解析用户意图

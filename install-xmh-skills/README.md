@@ -4,7 +4,17 @@
 
 ## 快速开始
 
-### 通过 AI 触发（推荐）
+### 远程安装（推荐，无需克隆仓库）
+
+```bash
+# macOS / Linux
+curl -fsSL https://raw.githubusercontent.com/xiemuhou/my-ai-skills/main/install/install.py | python3
+
+# Windows PowerShell
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/xiemuhou/my-ai-skills/main/install/install.py" -OutFile "$env:TEMP\xmh-install.py"; python "$env:TEMP\xmh-install.py"
+```
+
+### 通过 AI 触发
 
 在 Claude Code 中直接说：
 
@@ -14,23 +24,14 @@
 
 AI 会自动找到并运行安装脚本，将 skills 安装到 `~/.codex/skills/` 和 `~/.claude/skills/`。
 
-### 手动运行
+### 本地安装（已克隆仓库）
 
 ```powershell
-# 同时安装到 Codex 和 Claude Code（默认）
-python install-xmh-skills/scripts/install.py
-
-# 仅安装到 Claude Code
-python install-xmh-skills/scripts/install.py --claude
-
-# 仅安装到 Codex
-python install-xmh-skills/scripts/install.py --codex
-
-# 强制重新安装（忽略版本检测）
-python install-xmh-skills/scripts/install.py --force
-
-# 预览模式（不实际写入）
-python install-xmh-skills/scripts/install.py --dry-run
+python install-xmh-skills/scripts/install.py           # 默认：两个平台
+python install-xmh-skills/scripts/install.py --claude  # 仅 Claude Code
+python install-xmh-skills/scripts/install.py --codex   # 仅 Codex
+python install-xmh-skills/scripts/install.py --force   # 强制重装
+python install-xmh-skills/scripts/install.py --dry-run # 预览
 ```
 
 ## 安装目标

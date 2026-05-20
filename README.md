@@ -4,9 +4,17 @@
 
 ## 快速开始
 
-### 安装
+### 安装（推荐：远程安装，无需克隆仓库）
 
-将仓库克隆到本地，然后运行安装脚本：
+```bash
+# macOS / Linux
+curl -fsSL https://raw.githubusercontent.com/xiemuhou/my-ai-skills/main/install/install.py | python3
+
+# Windows PowerShell
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/xiemuhou/my-ai-skills/main/install/install.py" -OutFile "$env:TEMP\xmh-install.py"; python "$env:TEMP\xmh-install.py"
+```
+
+### 安装（本地安装）
 
 ```powershell
 # 克隆仓库
