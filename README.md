@@ -28,7 +28,7 @@ python install-xmh-skills/scripts/install.py
 也可以让 AI 帮你安装 — 在 Claude Code 中直接说：
 
 ```
-安装 skills
+安装 skills1111
 ```
 
 ### 使用
