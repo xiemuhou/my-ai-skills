@@ -2,6 +2,13 @@
 
 个人 Claude Code Skills 集合，让 AI 助手自动完成 Git 提交等常见开发任务。
 
+## 前置条件
+
+- **Python 3.x**（[python.org](https://python.org) 下载安装）
+- **Git**（[git-scm.com](https://git-scm.com) 下载安装）
+
+> Windows 用户注意：务必从 [python.org](https://python.org) 安装 Python，不要使用 Microsoft Store 版本。安装时勾选 "Add Python to PATH"。安装后可使用系统自带的 `py` 启动器代替 `python` 命令，避免与 Windows 自带的商店跳转器冲突。
+
 ## 快速开始
 
 ### 安装（推荐：远程安装，无需克隆仓库）
@@ -10,8 +17,8 @@
 # macOS / Linux
 curl -fsSL https://raw.githubusercontent.com/xiemuhou/my-ai-skills/main/install/install.py | python3
 
-# Windows PowerShell
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/xiemuhou/my-ai-skills/main/install/install.py" -OutFile "$env:TEMP\xmh-install.py"; python "$env:TEMP\xmh-install.py"
+# Windows PowerShell（使用 py 启动器）
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/xiemuhou/my-ai-skills/main/install/install.py" -OutFile "$env:TEMP\xmh-install.py"; py "$env:TEMP\xmh-install.py"
 ```
 
 ### 安装（本地安装）
@@ -21,8 +28,8 @@ Invoke-WebRequest -Uri "https://raw.githubusercontent.com/xiemuhou/my-ai-skills/
 git clone https://github.com/xiemuhou/my-ai-skills.git
 cd my-ai-skills
 
-# 安装所有 skills 到系统级目录
-python install-xmh-skills/scripts/install.py
+# 安装所有 skills 到系统级目录（Windows 使用 py，macOS/Linux 使用 python3）
+py install-xmh-skills/scripts/install.py
 ```
 
 也可以让 AI 帮你安装 — 在 Claude Code 中直接说：
