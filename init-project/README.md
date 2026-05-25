@@ -1,136 +1,165 @@
-# Init Project
+# init-project — 用户使用指南
 
-这个 skill 用来为当前项目初始化标准化的 AI 协作文档和基础仓库文件，适合新项目起步或已有项目补齐指令体系；它只应该在当前项目目录内工作，不应越界修改其它目录。
+本 README 面向**使用者**：如何触发并正确使用 `init-project` skill。
+执行指令与硬性规范在 `SKILL.md`；默认参数在 `config.yaml`。
 
-## 用法
+## 快速开始
 
-### 最推荐用法
+### 常规用法（最小可用）
 
 ```text
-请使用 init-project skill 为本项目进行初始化。
-输入：当前项目根目录
-输出：`AGENTS.md`、`CLAUDE.md`、`README.md`、`CHANGELOG.md`、`.gitignore`、`docs/`、`docs/plans/`
+请使用 init-project skill 为本项目进行初始化
+输入：当前项目目录（自动分析）
+输出：AGENTS.md、CLAUDE.md、README.md、CHANGELOG.md、.gitignore、docs/、docs/plans/
 ```
 
-### 进阶用法
+你也可以用更自然的方式：
+
+```
+初始化项目
+创建项目指令文件
+生成 AGENTS.md
+```
+
+### 进阶用法（带参数约束）
 
 ```text
-请使用 init-project skill 为本项目进行初始化。
-输入：当前项目根目录
-输出：标准化项目指令与说明文档
+初始化项目
 另外，还有下列参数约束：
-- 尽量保留已有内容
-- 默认语言自动检测
-- 不修改当前目录之外的文件
+- --overwrite：完全覆盖现有文件
+- --skip-readme：跳过 README 生成
+- --only-readme：仅生成 README
 ```
 
-## 能做什么
+## 设计理念
 
-- 为项目生成 `AGENTS.md`、`CLAUDE.md`、`README.md`、`CHANGELOG.md`、`.gitignore`，并初始化 `docs/` 与 `docs/plans/`。
-- 把 `AGENTS.md` 作为跨平台通用指令的单一真相来源。
-- 让 `CLAUDE.md` 成为面向 Claude Code 的轻量适配层。
-- 自动分析项目结构、项目类型和默认语言。
-- 不适合拿来扫描父目录、批量改多个项目，或无边界地覆盖已有文件。
+✨ **核心价值**：一键为新项目或现有项目补齐标准化的 AI 协作文档体系。自动检测项目类型，生成符合 AGENTS.md 社区标准的跨平台指令文件。
+
+**工作原理**（简化版）：
+1. 扫描项目目录，识别标志文件（`pyproject.toml` / `package.json` / `Cargo.toml` 等）
+2. 自动检测项目类型、语言、目录结构
+3. 从模板生成文档，替换占位符
+4. 已存在的文件启用智能合并（保留你的自定义内容）
+
+**设计哲学**：
+- 📄 **AGENTS.md 唯一真相源** — 你只需维护这一个文件
+- 🔗 **CLAUDE.md 自动引用** — 通过 `@./AGENTS.md` 自动同步，零维护
+- 🧠 **智能合并** — 再次运行不会覆盖你的自定义内容
+- 🌐 **跨平台兼容** — 支持 20+ AI 编码工具
 
 ## 使用示例
 
-### 示例 1：初始化一个新项目
+### 示例 1：全新项目初始化（最常用）
 
-```text
-请使用 init-project skill 为本项目进行初始化。
-输入：当前项目根目录
-输出：完整的项目指令文件与说明文档
+```
+初始化项目
 ```
 
-### 示例 2：为已有项目补齐协作文档
+> AI 自动运行：检测项目类型 → 生成全部文档 → 补齐 docs/ 目录。
 
-```text
-请使用 init-project skill 初始化这个已有仓库。
-输入：当前项目根目录
-输出：`AGENTS.md`、`CLAUDE.md`、`README.md`、`CHANGELOG.md`、`.gitignore`、`docs/`、`docs/plans/`
-另外，还有下列参数约束：
-- 尽量保留已有 README 的有效信息
-- 不破坏现有项目结构
+### 示例 2：现有项目补全文档
+
+```
+为当前项目补齐 AGENTS.md 和 CLAUDE.md
 ```
 
-### 示例 3：只补某一类文档
+> 智能合并：保留你已自定义的项目目标和工作流，更新标准化部分。
 
-```text
-请使用 init-project skill 为本项目补齐说明文档。
-输入：当前项目根目录
-输出：README 或 CHANGELOG
-另外，还有下列参数约束：
-- 只更新 README
+### 示例 3：完全覆盖重新生成
+
+```
+初始化项目，使用 --overwrite 覆盖现有文件
 ```
 
-## 输出
+## 输出文件
 
-- `AGENTS.md`：跨平台通用项目指令，应该被长期维护。
-- `CLAUDE.md`：Claude Code 适配层，核心内容应与 `AGENTS.md` 保持一致。
-- `README.md`：项目介绍、快速开始和目录说明。
-- `CHANGELOG.md`：项目变更记录。
-- `.gitignore`：默认的安全与项目类型忽略规则。
-- `docs/`：项目文档根目录。
-- `docs/plans/`：计划文档固定目录；其余 `docs/` 文档在代码变化时也应及时同步更新。
+| 文件 | 用途 | 强制性 |
+|------|------|--------|
+| `AGENTS.md` | 跨平台通用项目指令（Single Source of Truth） | 必须 |
+| `CLAUDE.md` | Claude Code 特定适配（`@./AGENTS.md` 引用） | 必须 |
+| `README.md` | 项目介绍与使用方法 | 可选 |
+| `CHANGELOG.md` | 项目变更记录（Keep a Changelog 格式） | 必须 |
+| `.gitignore` | Git 忽略规则（安全优先） | 推荐 |
+| `docs/` `docs/plans/` | 文档和计划目录 | 推荐 |
 
-## 配置
+## 支持的项目类型
 
-- 配置文件：`init-project/config.yaml`
-- 关键配置节：
-  - `language_mapping`
-  - `agents_required_sections`
-  - `claude_required_sections`
-  - `readme_required_sections`
-  - `changelog_required_sections`
-- 这个 skill 的默认定位是“完整初始化”，不是只生成一份孤立文档。
+| 类型 | 检测依据 |
+|------|----------|
+| Python | `pyproject.toml`、`requirements.txt`、`setup.py` |
+| Web | `package.json`、`yarn.lock`、`webpack.config.js` |
+| Rust | `Cargo.toml`、`Cargo.lock` |
+| Go | `go.mod`、`go.sum` |
+| Java | `pom.xml`、`build.gradle` |
+| 数据科学 | `*.ipynb`、`*.R`、`environment.yml` |
+| 文档 | `docs/`、`mkdocs.yml`、`docusaurus.config.js` |
+| 通用 | 未识别时回退 |
 
-## 备选用法（脚本/硬编码）
+## ✨ 特性一览
 
-如果你想直接在命令行下执行项目初始化，脚本入口最方便。
+- ✅ 完全自动化，无需手动输入信息
+- ✅ 智能项目类型检测（7 种常见类型）
+- ✅ 自动语言检测（zh-CN / en-US / ja-JP / ko-KR）
+- ✅ 智能合并：保留自定义内容，更新标准化部分
+- ✅ 零维护成本：修改 AGENTS.md 后 CLAUDE.md 自动生效
+- ✅ 跨平台兼容：符合 AGENTS.md 标准，支持 20+ AI 工具
+- ✅ 安全优先的 .gitignore（自动忽略 .env、密钥、证书）
 
-### 自动分析当前目录并生成文件
+## 备选用法（脚本/命令行）
+
+### 完全自动化
 
 ```bash
 python3 init-project/scripts/generate.py --auto
 ```
 
-### 自动分析并覆盖已有文件
+### 覆盖现有文件
 
 ```bash
 python3 init-project/scripts/generate.py --auto --overwrite
 ```
 
-### 只生成部分文档
+### 仅生成特定文件
 
 ```bash
+# 跳过 README
+python3 init-project/scripts/generate.py --auto --skip-readme
+
+# 仅生成 README
 python3 init-project/scripts/generate.py --auto --only-readme
-python3 init-project/scripts/generate.py --auto --only-changelog
 ```
 
-### 跳过部分输出
+### 手动指定信息
 
 ```bash
 python3 init-project/scripts/generate.py \
-  --auto \
-  --skip-readme \
-  --skip-changelog \
-  --skip-gitignore
+  --project-name "my-project" \
+  --project-description "数据科学项目" \
+  --workflow "数据获取 → 分析 → 可视化"
 ```
 
 ## 常见问题
 
-### Q：`AGENTS.md` 和 `CLAUDE.md` 到底谁是主文件？
+### Q：AGENTS.md 和 CLAUDE.md 有什么区别？
 
-A：`AGENTS.md` 是单一真相来源；`CLAUDE.md` 是平台适配层。维护时应优先保证 `AGENTS.md` 的口径正确。
+A：AGENTS.md 是跨平台通用指令（支持 20+ AI 工具），你手动维护这一个文件即可。CLAUDE.md 通过 `@./AGENTS.md` 自动引用 AGENTS.md，加上少量 Claude Code 专属说明，无需单独维护。
 
-### Q：它会不会改到当前项目目录之外？
+### Q：再次运行会覆盖我之前的修改吗？
 
-A：不应该。这个 skill 的边界就是“当前目录内生成或更新项目文件”。
+A：不会。技能默认启用智能合并模式——保留你自定义的项目目标、工作流、自定义章节；只更新工程原则、语言设置等标准化内容。除非你用了 `--overwrite`。
 
-### Q：既然是自动化，是不是可以放心覆盖任何已有文件？
+### Q：为什么 CHANGELOG.md 是强制性的？
 
-A：不能这么理解。自动化不等于无脑覆盖。是否覆盖应由你显式决定，例如使用 `--overwrite`。
+A：项目管理的硬性要求。每次修改项目指令文件或项目结构时，都应记录变更，方便追溯和协作。
 
-### Q：为什么 `.gitignore` 也算初始化结果的一部分？
+### Q：支持哪些项目类型？
 
-A：因为它直接关系到项目安全和仓库整洁度，尤其能防止敏感文件、系统文件和缓存文件被误提交。
+A：Python、Web（Node.js）、Rust、Go、Java、数据科学、文档项目，以及通用模板（未识别时回退）。
+
+### Q：脚本需要什么依赖？
+
+A：Python 3.x + PyYAML（`pip install pyyaml`）。其余均为标准库。
+
+### Q：生成的文件可以手动修改吗？
+
+A：可以。AGENTS.md 就是设计来让你手动维护的。智能合并机制会保护你的自定义内容。
