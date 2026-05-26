@@ -1,6 +1,6 @@
 # article-to-markdown — 网页文章保存为 Markdown
 
-`article-to-markdown` 用来把网页文章保存成干净的 Markdown 文件，自动补齐 YAML Front Matter，并把文章特色图片链接放到正文第一行。它适合收藏技术文章、博客、教程、访谈和参考资料。
+`article-to-markdown` 用来把网页文章保存成干净的 Markdown 文件，自动补齐 YAML Front Matter，并把文章特色图片放到正文第一行。它适合收藏技术文章、博客、教程、访谈和参考资料。
 
 ## 快速开始
 
@@ -31,30 +31,26 @@ AI 会完成：
 
 生成的 Markdown 文件通常包含：
 
-```markdown
+````markdown
 ---
-title: 文章标题
-source: https://example.com/article
-category: 技术
-tags:
-  - python
-  - async
-saved_at: 2026-05-26
+category: [技术]
+tag: [python, async]
+status: publish
 ---
 
-![featured image](https://example.com/cover.jpg)
+![](https://example.com/cover.jpg)
 
 正文内容...
-```
+````
 
 ## 保存原则
 
 | 内容 | 处理方式 |
 | --- | --- |
 | 标题 | 用于文件名和 front matter |
-| 特色图片 | 优先从 `og:image`、`twitter:image`、JSON-LD `image` 或文章主图提取，放在正文第一行 |
+| 特色图片 | 优先从 `og:image`、`twitter:image`、JSON-LD `image` 或文章主图提取，正文第一行显示图片 |
 | 正文 | 尽量保留原文结构 |
-| 图片 | 保留原始图片链接 |
+| 图片 | 保留原始图片链接，不下载、不转存、不改写 |
 | 来源链接 | 写入 front matter |
 | 广告、页脚、推荐阅读 | 尽量移除 |
 | 更新时间、作者信息 | 如果网页中清晰可见，会尽量保留到元数据 |
@@ -107,13 +103,13 @@ saved_at: 2026-05-26
 
 ### 特色图片保存在哪里？
 
-如果能识别到特色图片，文件会在 front matter 后的正文第一行写入：
+如果能识别到特色图片，文件会在 front matter 结束后的正文第一行显示图片：
 
-```markdown
-![featured image](https://example.com/cover.jpg)
-```
+````markdown
+![](https://example.com/cover.jpg)
+````
 
-特色图片不会写入 YAML Front Matter；front matter 只保留分类、标签、状态等元数据。
+这些内容不属于 YAML Front Matter，因为它们必须放在第二个 `---` 之后。front matter 只保留分类、标签、状态等元数据。
 
 ### 会翻译文章吗？
 
