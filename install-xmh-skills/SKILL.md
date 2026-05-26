@@ -4,8 +4,12 @@ description: 将当前仓库的 skills 复制安装到 ~/.codex/skills/ 和 ~/.c
 metadata:
   type: skill
   trigger:
-    - "安装skills" "安装技能" "install skills"
-    - "更新skills" "更新技能" "update skills"
+    - "安装skills"
+    - "安装技能"
+    - "install skills"
+    - "更新skills"
+    - "更新技能"
+    - "update skills"
     - "/install-xmh-skills"
   os: [windows, linux, macos]
   shell: [powershell, bash]

@@ -46,7 +46,14 @@ REPO_BRANCH = "main"
 
 _IGNORE_DIR_NAMES = {"__pycache__", ".pytest_cache", ".mypy_cache", "test", "tests", "plans"}
 _IGNORE_FILE_NAMES = {".DS_Store"}
-_IGNORE_ROOT_FILE_NAMES = {"readme.md", "changelog.md", "claude.md", ".gitignore"}
+_IGNORE_ROOT_FILE_NAMES = {
+    "readme.md",
+    "changelog.md",
+    "claude.md",
+    ".gitignore",
+    "skill.yaml",
+    "skill.yml",
+}
 
 # ── 工具函数 ──────────────────────────────────────────────
 

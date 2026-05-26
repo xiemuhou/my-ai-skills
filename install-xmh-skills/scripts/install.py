@@ -38,7 +38,7 @@ if sys.platform == "win32":
 # ── 常量 ──────────────────────────────────────────────────
 _IGNORE_DIR_NAMES = {"__pycache__", ".pytest_cache", ".mypy_cache", "test", "tests", "plans"}
 _IGNORE_FILE_NAMES = {".DS_Store"}
-_IGNORE_ROOT_FILE_NAMES = {"readme.md", "changelog.md"}
+_IGNORE_ROOT_FILE_NAMES = {"readme.md", "changelog.md", "skill.yaml", "skill.yml"}
 _IGNORE_GLOBS = ("*.pyc", "*.pyo")
 
 # ── 数据类 ────────────────────────────────────────────────
@@ -383,9 +383,6 @@ def main(argv: list[str] | None = None) -> int:
     print(f"🔍 扫描源目录: {skills_root}")
 
     skill_dirs = _find_skill_dirs(skills_root)
-
-    # 排除安装器自身
-    skill_dirs = [d for d in skill_dirs if d.name != "install-xmh-skills"]
 
     if not skill_dirs:
         print(f"❌ 未在 {skills_root} 中找到任何 skill 目录（需要包含 SKILL.md）")
