@@ -1,6 +1,6 @@
 # article-to-markdown — 网页文章保存为 Markdown
 
-`article-to-markdown` 用来把网页文章保存成干净的 Markdown 文件，并自动补齐 YAML Front Matter。它适合收藏技术文章、博客、教程、访谈和参考资料。
+`article-to-markdown` 用来把网页文章保存成干净的 Markdown 文件，自动补齐 YAML Front Matter，并把文章特色图片链接放到正文第一行。它适合收藏技术文章、博客、教程、访谈和参考资料。
 
 ## 快速开始
 
@@ -11,7 +11,7 @@
 AI 会完成：
 
 ```text
-获取网页 -> 提取正文 -> 清理干扰内容 -> 生成 front matter -> 保存 .md 文件
+获取网页 -> 提取特色图片 -> 提取正文 -> 清理干扰内容 -> 生成 front matter -> 保存 .md 文件
 ```
 
 默认保存到当前目录。
@@ -24,6 +24,7 @@ AI 会完成：
 | 保存到指定目录 | `保存文章 <url> --path D:\notes` |
 | 指定分类和标签 | `保存网页 <url> --category 技术 --tag python` |
 | 自定义文件名 | `保存文章 <url> --filename async-python.md` |
+| 手动指定特色图片 | `保存文章 <url> --featured-image https://example.com/cover.jpg` |
 | 英文触发 | `article to markdown <url>` |
 
 ## 输出格式
@@ -39,7 +40,10 @@ tags:
   - python
   - async
 saved_at: 2026-05-26
+featured_image: https://example.com/cover.jpg
 ---
+
+![featured image](https://example.com/cover.jpg)
 
 正文内容...
 ```
@@ -49,6 +53,7 @@ saved_at: 2026-05-26
 | 内容 | 处理方式 |
 | --- | --- |
 | 标题 | 用于文件名和 front matter |
+| 特色图片 | 优先从 `og:image`、`twitter:image`、JSON-LD `image` 或文章主图提取，放在正文第一行 |
 | 正文 | 尽量保留原文结构 |
 | 图片 | 保留原始图片链接 |
 | 来源链接 | 写入 front matter |
@@ -81,18 +86,35 @@ saved_at: 2026-05-26
 保存文章 https://example.com/article --filename codex-skills-guide.md
 ```
 
+手动指定特色图片：
+
+```text
+保存文章 https://example.com/article --featured-image https://example.com/cover.jpg
+```
+
 ## 注意事项
 
 - 需要能访问目标网页。
 - 付费墙、登录后内容、强反爬页面可能无法完整提取。
 - 如果网页结构很复杂，AI 会优先保留正文可读性，而不是逐像素复刻页面。
 - 文件名会尽量安全化，避免 Windows 不支持的字符。
+- 如果无法可靠识别特色图片，不会编造图片链接，也不会插入占位图片。
 
 ## 常见问题
 
 ### 可以保存图片到本地吗？
 
 默认只保留图片原始链接，不下载图片。这样生成速度更快，也避免版权和存储问题。
+
+### 特色图片保存在哪里？
+
+如果能识别到特色图片，文件会在 front matter 后的正文第一行写入：
+
+```markdown
+![featured image](https://example.com/cover.jpg)
+```
+
+同时会在 front matter 中记录 `featured_image`，方便后续检索或发布系统读取。
 
 ### 会翻译文章吗？
 
