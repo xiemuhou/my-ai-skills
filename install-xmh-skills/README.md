@@ -1,95 +1,107 @@
-# Install XMH Skills
+# install-xmh-skills — Skills 安装器
 
-将当前仓库的 skills 复制安装到系统级目录，使 skills 在任意项目中全局可用。
+`install-xmh-skills` 用来把当前仓库里的 skills 安装到全局目录，让 Codex 和 Claude Code 都能直接触发使用。
+
+它会扫描仓库根目录下所有包含 `SKILL.md` 的子目录，并用 MD5 判断哪些 skill 发生了变化，只安装需要更新的部分。
 
 ## 快速开始
 
-### 远程安装（推荐，无需克隆仓库）
+在仓库根目录运行：
 
-```bash
-# macOS / Linux
-curl -fsSL https://raw.githubusercontent.com/xiemuhou/my-ai-skills/main/install/install.py | python3
-
-# Windows PowerShell
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/xiemuhou/my-ai-skills/main/install/install.py" -OutFile "$env:TEMP\xmh-install.py"; python "$env:TEMP\xmh-install.py"
+```powershell
+python install-xmh-skills/scripts/install.py
 ```
 
-### 通过 AI 触发
+或者在 Codex / Claude Code 里直接说：
 
-在 Claude Code 中直接说：
-
-```
+```text
 安装 skills
 ```
 
-AI 会自动找到并运行安装脚本，将 skills 安装到 `~/.codex/skills/` 和 `~/.claude/skills/`。
+默认会安装到两个目录：
 
-### 本地安装（已克隆仓库）
-
-```powershell
-python install-xmh-skills/scripts/install.py           # 默认：两个平台
-python install-xmh-skills/scripts/install.py --claude  # 仅 Claude Code
-python install-xmh-skills/scripts/install.py --codex   # 仅 Codex
-python install-xmh-skills/scripts/install.py --force   # 强制重装
-python install-xmh-skills/scripts/install.py --dry-run # 预览
-```
-
-## 安装目标
-
-| 平台 | 路径 |
-|------|------|
+| 平台 | 安装目录 |
+| --- | --- |
 | Codex | `~/.codex/skills/` |
 | Claude Code | `~/.claude/skills/` |
 
-## 工作原理
+## 常用命令
 
-1. **扫描** — 在仓库根目录扫描所有包含 `SKILL.md` 的子目录
-2. **MD5 比较** — 计算每个 skill 的 MD5，与已安装版本对比
-3. **复制** — 仅复制有变化的 skill（排除 `README.md`、`tests/`、隐藏文件等）
-4. **记录** — 写入 `.skill-manifest.{codex,claude}.json` 记录版本信息
+| 需求 | 命令 |
+| --- | --- |
+| 安装到两个平台 | `python install-xmh-skills/scripts/install.py` |
+| 只安装到 Codex | `python install-xmh-skills/scripts/install.py --codex` |
+| 只安装到 Claude Code | `python install-xmh-skills/scripts/install.py --claude` |
+| 强制重装全部 skills | `python install-xmh-skills/scripts/install.py --force` |
+| 只预览安装结果 | `python install-xmh-skills/scripts/install.py --dry-run` |
+| 指定源目录 | `python install-xmh-skills/scripts/install.py --source D:\my-ai-skills` |
 
-## 参数
+## 自然语言用法
 
-| 参数 | 效果 |
-|------|------|
-| `--codex` | 仅安装到 `~/.codex/skills/` |
-| `--claude` | 仅安装到 `~/.claude/skills/` |
-| `--force` | 强制重新安装，忽略 MD5 版本比较 |
-| `--dry-run` | 预览模式，显示将要执行的操作但不实际修改 |
-| `--source <path>` | 指定 skills 源目录（默认自动检测） |
+| 你说 | AI 会做什么 |
+| --- | --- |
+| `安装 skills` | 安装或更新所有 skills |
+| `更新 skills` | 通常会使用 `--force` 强制重装 |
+| `预览安装 skills` | 使用 `--dry-run` 查看会安装什么 |
+| `只安装到 Codex` | 使用 `--codex` |
+| `只安装到 Claude` | 使用 `--claude` |
 
-## 安装时忽略的文件
+## 安装规则
 
-以下内容不会被复制到目标目录：
+安装器会复制 skill 的核心文件，但跳过不需要进入运行环境的内容：
 
-- `README.md`、`CHANGELOG.md`（根级文档）
-- `tests/`、`plans/` 目录
-- 隐藏文件（`.` 开头）
-- `__pycache__`、`.pytest_cache` 等缓存目录
-- `*.pyc`、`*.pyo` 编译文件
+| 会安装 | 会跳过 |
+| --- | --- |
+| `SKILL.md` | 根级 `README.md` |
+| `config.yaml` | 根级 `CHANGELOG.md` |
+| `scripts/` | `tests/`、`test/` |
+| `references/` | `plans/` |
+| `assets/` | 隐藏文件、缓存文件、`*.pyc` |
 
-## FAQ
+安装器还会跳过根级 `SKILL.yaml` / `SKILL.yml`，避免同一个 skill 出现重复入口。
 
-**Q: 安装后如何验证？**
-A: 检查目标目录是否存在对应 skill：
-```powershell
-ls ~/.claude/skills/git-commit/
+## 版本判断
+
+每个安装后的 skill 都会写入 manifest：
+
+```text
+.skill-manifest.codex.json
+.skill-manifest.claude.json
 ```
 
-**Q: 安装会覆盖我的自定义修改吗？**
-A: 如果目标目录已存在同名 skill 且 MD5 不同，旧版本会被删除后重新复制。如想保留自定义版本，请先备份。
+如果源目录内容的 MD5 没变，安装器会跳过该 skill。这样重复运行安装命令也很快。
 
-**Q: 如何卸载某个 skill？**
-A: 直接删除目标目录即可：
+## 推荐工作流
+
+更新 GitHub 最新版本并安装：
+
 ```powershell
-rm -r ~/.claude/skills/<skill-name>/
+cd D:\my-ai-skills
+git pull --ff-only origin main
+python install-xmh-skills/scripts/install.py
 ```
 
-**Q: 为什么不用软链接？**
-A: 复制安装兼容性更好，不依赖源仓库位置，且各平台行为一致。
+修改 skill 后本地验证：
 
-## 文件说明
+```powershell
+python install-xmh-skills/scripts/install.py --dry-run
+python install-xmh-skills/scripts/install.py
+```
 
-- `SKILL.md` — AI 执行规范
-- `README.md` — 本文件，用户使用文档
-- `scripts/install.py` — 安装脚本
+## 常见问题
+
+### 为什么 README.md 没有安装到全局 skill 目录？
+
+README 面向人阅读，运行时 AI 主要读取 `SKILL.md`。安装器会跳过 README，避免全局 skill 包过大。
+
+### 为什么某些 skill 显示“跳过”？
+
+表示这个 skill 和上次安装的内容一致，不需要重复复制。
+
+### 可以只给 Codex 安装吗？
+
+可以：
+
+```powershell
+python install-xmh-skills/scripts/install.py --codex
+```

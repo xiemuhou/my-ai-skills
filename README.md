@@ -1,262 +1,151 @@
 # My AI Skills
 
-个人 Claude Code Skills 集合，覆盖 Git 提交自动化、GitHub Release 发布、网页文章保存、项目初始化、技能文档生成等常见任务。
+这是一个个人 Agent Skills 仓库，面向 OpenAI Codex 和 Claude Code 使用。它把常见开发工作沉淀成可复用的 skill，例如 Git 提交、项目初始化、网页文章保存、Release 发布和 skill 文档生成。
 
-## 前置条件
-
-- **Python 3.x**（[python.org](https://python.org) 下载安装）
-- **Git**（[git-scm.com](https://git-scm.com) 下载安装）
-
-> Windows 用户注意：务必从 [python.org](https://python.org) 安装 Python，不要使用 Microsoft Store 版本。安装时勾选 "Add Python to PATH"。安装后可使用系统自带的 `py` 启动器代替 `python` 命令，避免与 Windows 自带的商店跳转器冲突。
+你可以把它理解为一组“给 AI 助手看的工作说明书”：安装后，在 Codex 或 Claude Code 里直接用自然语言说出需求，AI 会自动选择合适的 skill 执行。
 
 ## 快速开始
 
-### 安装（推荐：远程安装，无需克隆仓库）
+### 方式一：远程安装
 
-```bash
-# macOS / Linux
-curl -fsSL https://raw.githubusercontent.com/xiemuhou/my-ai-skills/main/install/install.py | python3
-
-# Windows PowerShell（使用 py 启动器）
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/xiemuhou/my-ai-skills/main/install/install.py" -OutFile "$env:TEMP\xmh-install.py"; py "$env:TEMP\xmh-install.py"
-```
-
-### 安装（本地安装）
+适合只想使用 skills，不想克隆整个仓库的情况。
 
 ```powershell
-# 克隆仓库
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/xiemuhou/my-ai-skills/main/install/install.py" -OutFile "$env:TEMP\xmh-install.py"
+py "$env:TEMP\xmh-install.py"
+```
+
+macOS / Linux:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/xiemuhou/my-ai-skills/main/install/install.py | python3
+```
+
+### 方式二：本地安装
+
+适合你要修改、开发或同步自己的 skills。
+
+```powershell
 git clone https://github.com/xiemuhou/my-ai-skills.git
 cd my-ai-skills
-
-# 安装所有 skills 到系统级目录（Windows 使用 py，macOS/Linux 使用 python3）
-py install-xmh-skills/scripts/install.py
+python install-xmh-skills/scripts/install.py
 ```
 
-也可以让 AI 帮你安装 — 在 Claude Code 中直接说：
+安装目标：
 
+| 平台 | 目录 |
+| --- | --- |
+| Codex | `~/.codex/skills/` |
+| Claude Code | `~/.claude/skills/` |
+
+## 怎么使用
+
+安装后不用记命令，直接对 Codex 或 Claude Code 说自然语言即可：
+
+```text
+提交改动
 ```
-安装 skills
+
+```text
+初始化项目
 ```
 
-### 使用
-
-安装后，在 Claude Code 中直接用自然语言触发：
-
-```
-提交 Git 改动
+```text
+把这个网页保存成 Markdown：https://example.com/article
 ```
 
-AI 会自动：分析改动 → 暂存文件 → 生成 conventional commit 信息 → 提交 → 推送。
+```text
+生成技能 README
+```
+
+如果你想指定 skill，也可以这样说：
+
+```text
+请使用 init-project skill 初始化当前项目
+```
 
 ## 已有 Skills
 
-### git-commit — 自动化 Git 提交
+| Skill | 适合做什么 | 常用说法 |
+| --- | --- | --- |
+| `git-commit` | 分析改动、生成 Conventional Commit、提交并推送 | `提交改动`、`commit`、`推送` |
+| `install-xmh-skills` | 安装或更新本仓库 skills | `安装 skills`、`更新 skills` |
+| `article-to-markdown` | 把网页文章保存为 Markdown | `保存文章 <url>`、`网页转 markdown` |
+| `write-skill-readme` | 为 skill 生成用户友好的 README | `生成技能 README`、`更新技能文档` |
+| `git-publish-release` | 生成 Release Notes 并发布 GitHub Release | `发布项目到 GitHub`、`创建 GitHub Release` |
+| `init-project` | 生成 AGENTS.md、CLAUDE.md、README、CHANGELOG 等项目指令文件 | `初始化项目`、`生成 AGENTS.md` |
 
-自动分析工作区改动，生成符合 [Conventional Commits](https://www.conventionalcommits.org/) 规范的提交信息，智能拆分为多个语义清晰的提交，并推送到 GitHub。
+## 推荐工作流
 
-**触发方式：**
+更新本仓库和全局 skills：
 
-| 你说的话 | 效果 |
-|----------|------|
-| `提交改动` `commit` `git commit` | 自动模式，全流程自动完成 |
-| `提交改动，审核模式` `commit --review` | 审核模式，关键节点暂停确认 |
-| `提交代码，使用 emoji` | 提交信息带 emoji 前缀 |
-| `推送` `push` | 推送到远程仓库 |
+```powershell
+cd D:\my-ai-skills
+git pull --ff-only origin main
+python install-xmh-skills/scripts/install.py
+```
 
-**主要特性：**
+开发或修改 skill：
 
-- 自动识别改动类型（feat / fix / docs / refactor / ...）
-- 大改动智能拆分为多个提交（行数 > 300 / 文件 > 20 / 跨模块）
-- 支持自动模式和审核模式
-- 提交信息中文/英文自适应
-- 默认推送到远程仓库
-
-详细文档见 [git-commit/README.md](git-commit/README.md)
-
-### install-xmh-skills — Skills 安装器
-
-将仓库中的 skills 复制安装到 `~/.codex/skills/` 和 `~/.claude/skills/`，使 skills 全局可用。
-
-**触发方式：**
-
-| 你说的话 | 效果 |
-|----------|------|
-| `安装skills` `安装技能` | 安装所有 skills 到两个平台 |
-| `安装skills到claude` | 仅安装到 Claude Code |
-| `更新skills` `强制安装skills` | 强制重新安装（忽略版本检测） |
-
-**主要特性：**
-
-- MD5 版本追踪，仅更新有变化的 skill
-- 支持 Codex 和 Claude Code 双平台
-- 支持预览模式 (`--dry-run`)
-- 自动排除文档、测试、缓存等非核心文件
-
-详细文档见 [install-xmh-skills/README.md](install-xmh-skills/README.md)
-
-### article-to-markdown — 网页文章保存
-
-将网页文章保存为本地 Markdown 文件，AI 根据内容自动生成 YAML Front Matter 元数据。
-
-**触发方式：**
-
-| 你说的话 | 效果 |
-|----------|------|
-| `保存文章 <url>` `article to markdown` | 获取网页，保存为 .md 文件 |
-| `保存网页 <url> --category 技术 --tag python` | 手动指定分类和标签 |
-| `保存文章 <url> --path D:\笔记` | 指定保存目录 |
-
-**主要特性：**
-
-- AI 自动推断 category 和 tag（各不超过 2 个词语）
-- 原样保存正文，图片使用原始链接
-- 自动移除文章来源、更新时间、页脚推广
-- 标题用于文件名，不出现在正文中
-
-详细文档见 [article-to-markdown/README.md](article-to-markdown/README.md)
-
-### write-skill-readme — 技能文档生成
-
-自动分析 Skill 结构，为 Agent Skills 生成小白友好的 README.md 使用指南。
-
-**触发方式：**
-
-| 你说的话 | 效果 |
-|----------|------|
-| `生成技能 README` `编写用户指南` | 分析 SKILL.md 并生成文档 |
-| `更新技能文档` | 更新已有 README |
-
-**主要特性：**
-
-- 自动解析 SKILL.md 提取触发词、参数、流程
-- 按模板生成结构化用户文档
-- 支持 config.yaml 参数说明
-
-详细文档见 [write-skill-readme/README.md](write-skill-readme/README.md)
-
-### git-publish-release — GitHub Release 发布
-
-智能分析 tag 间历史变化，自动生成 Release Notes 并创建 GitHub Release。
-
-**触发方式：**
-
-| 你说的话 | 效果 |
-|----------|------|
-| `发布项目到 GitHub` `创建 GitHub Release` | 自动分析变更并发布 |
-| `生成 Release Notes` | 仅生成 Release Notes |
-| `发布 v1.0.0` | 指定版本号发布 |
-
-**主要特性：**
-
-- 自动分析 tag 间 commit 差异
-- 按 Conventional Commits 分类生成 Release Notes
-- 支持首次发布、常规版本、预发布版本（alpha/beta/rc）
-- 自动识别 prerelease 标记
-
-详细文档见 [git-publish-release/README.md](git-publish-release/README.md)
-
-### init-project — 项目初始化文档生成
-
-自动检测项目类型和语言，一键生成标准化的 AI 协作文档（AGENTS.md、CLAUDE.md 等）和基础仓库文件。
-
-**触发方式：**
-
-| 你说的话 | 效果 |
-|----------|------|
-| `初始化项目` `创建项目指令文件` | 自动分析并生成全部文档 |
-| `生成 AGENTS.md` | 生成跨平台通用指令文件 |
-| `初始化项目 --overwrite` | 完全覆盖现有文件 |
-
-**主要特性：**
-
-- 智能检测项目类型（Python / Web / Rust / Go / Java / 数据科学 / 文档）
-- 自动生成 AGENTS.md + CLAUDE.md + README + CHANGELOG + .gitignore
-- 智能合并：再次运行保留用户自定义内容
-- CLAUDE.md 通过 `@./AGENTS.md` 自动引用，零维护成本
-- 自动检测操作系统语言
-
-详细文档见 [init-project/README.md](init-project/README.md)
+```text
+1. 修改对应 skill 目录下的 SKILL.md、README.md、config.yaml 或 scripts/
+2. 运行 python install-xmh-skills/scripts/install.py --dry-run 预览安装
+3. 运行 python install-xmh-skills/scripts/install.py 安装到全局目录
+4. 使用 git-commit skill 提交改动
+```
 
 ## 项目结构
 
-```
+```text
 my-ai-skills/
-├── README.md                  ← 本文件
-├── CLAUDE.md                  ← 项目级 AI 指令
-├── git-commit/                ← Git 提交 skill
-│   ├── SKILL.md               ← AI 执行规范
-│   ├── README.md              ← 用户使用文档
-│   └── config.yaml            ← 默认参数
-├── install-xmh-skills/        ← Skills 安装器
-│   ├── SKILL.md               ← AI 执行规范
-│   ├── README.md              ← 用户使用文档
-│   └── scripts/
-│       └── install.py         ← 安装脚本
-├── article-to-markdown/       ← 网页文章保存 skill
-│   ├── SKILL.md               ← AI 执行规范
-│   └── README.md              ← 用户使用文档
-├── write-skill-readme/        ← 技能文档生成 skill
-│   ├── SKILL.md               ← AI 执行规范
-│   └── references/            ← 参考模板
-├── git-publish-release/       ← GitHub Release 发布 skill
-│   ├── SKILL.md               ← AI 执行规范
-│   ├── README.md              ← 用户使用文档
-│   ├── scripts/               ← 辅助脚本
-│   └── references/            ← 参考模板
-└── init-project/              ← 项目初始化 skill
-    ├── SKILL.md               ← AI 执行规范
-    ├── config.yaml            ← 默认参数
-    ├── scripts/               ← 生成脚本
-    └── templates/             ← 文档模板
+├── README.md
+├── AGENTS.md
+├── CLAUDE.md
+├── install/
+│   └── install.py
+├── install-xmh-skills/
+│   ├── SKILL.md
+│   ├── README.md
+│   └── scripts/install.py
+├── git-commit/
+├── article-to-markdown/
+├── write-skill-readme/
+├── git-publish-release/
+└── init-project/
 ```
 
-## 开发新 Skill
+每个 skill 至少包含：
 
-### 最小结构
-
-每个 skill 是一个目录，必须包含 `SKILL.md`：
-
-```
-my-skill/
-├── SKILL.md     ← 必须：AI 执行规范（含 YAML frontmatter）
-├── README.md    ← 可选：用户使用文档
-└── config.yaml  ← 可选：默认参数
+```text
+skill-name/
+├── SKILL.md      # AI 执行规范，必须
+├── README.md     # 用户使用文档，推荐
+└── config.yaml   # 默认参数，可选
 ```
 
-### SKILL.md 模板
+## 安装参数
 
-```markdown
----
-name: my-skill
-description: 一句话描述这个 skill 做什么
-metadata:
-  type: skill
-  trigger:
-    - "触发词1"
-    - "触发词2"
----
+| 参数 | 作用 |
+| --- | --- |
+| `--codex` | 只安装到 `~/.codex/skills/` |
+| `--claude` | 只安装到 `~/.claude/skills/` |
+| `--force` | 忽略 MD5，强制重装 |
+| `--dry-run` | 只预览，不写入文件 |
+| `--source <path>` | 指定 skills 源目录 |
 
-# My Skill — 执行规范
+## 常见问题
 
-## 核心原则
-...
+### 安装后为什么 Codex 里看不到项目子文件？
 
-## 执行流程
-...
-```
+项目源码在 `D:\my-ai-skills`，安装后的全局 skills 在 `C:\Users\<你>\.codex\skills`。Codex 是否显示源码文件，取决于当前打开的 workspace；skill 是否可用，则取决于全局安装目录。
 
-### Skill 规范
+### 我应该修改源码目录还是全局安装目录？
 
-1. **frontmatter 必填**：`name`、`description`、`trigger` 列表
-2. **执行规范完整**：AI 需要足够的信息来自动完成全部步骤
-3. **安全约束明确**：列出所有禁止操作
-4. **错误处理**：覆盖常见异常场景的处理方式
+修改 `D:\my-ai-skills` 里的源码目录。改完后重新运行安装脚本，把最新版本同步到全局 skills 目录。
 
-## 技术栈
+### README 和 SKILL.md 有什么区别？
 
-- 平台：Windows + VSCode + Claude Code 扩展
-- Skills 标准：Claude Code Skills 格式（基于 Agent Skills 开放标准）
-- 托管：GitHub
+`README.md` 面向人，告诉你怎么用。`SKILL.md` 面向 AI，告诉 Codex 或 Claude Code 如何执行任务。
 
 ## License
 
