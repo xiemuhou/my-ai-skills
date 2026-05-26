@@ -40,7 +40,6 @@ tags:
   - python
   - async
 saved_at: 2026-05-26
-featured_image: https://example.com/cover.jpg
 ---
 
 ![featured image](https://example.com/cover.jpg)
@@ -114,7 +113,7 @@ featured_image: https://example.com/cover.jpg
 ![featured image](https://example.com/cover.jpg)
 ```
 
-同时会在 front matter 中记录 `featured_image`，方便后续检索或发布系统读取。
+特色图片不会写入 YAML Front Matter；front matter 只保留分类、标签、状态等元数据。
 
 ### 会翻译文章吗？
 

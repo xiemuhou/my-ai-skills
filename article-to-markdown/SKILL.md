@@ -40,7 +40,6 @@ metadata:
 | `tag` | AI 根据文章内容提取 | 内容标签，最多 2 个词语 |
 | `status` | `publish` | 发布状态 |
 | `filename` | 自动从标题提取 | 保存的文件名 |
-| `featured_image` | 从页面元数据或正文主图提取 | 文章特色图片原始链接，找不到则留空 |
 
 用户可在提供 URL 时一并指定：
 - `保存文章 https://xxx.com/xxx --category 技术 --tag python,AI --filename my-note`
@@ -74,6 +73,7 @@ metadata:
 - 如果成功提取 `featured_image`，在 front matter 之后的正文第一行写入：`![featured image](<featured_image_url>)`
 - 特色图片行之后保留一个空行，再写入处理后的正文
 - 如果正文开头已经包含同一个图片链接，不要重复插入
+- 不允许把特色图片写入 YAML front matter；front matter 中不要出现 `featured_image`、`image`、`cover` 等特色图片字段
 - 如果无法可靠识别特色图片，不要编造图片链接，也不要插入占位图片
 
 ### 阶段 4: 生成文件名
@@ -91,7 +91,6 @@ metadata:
 category: [<用户指定的 category>]
 tag: [<用户指定的 tag>]
 status: <用户指定的 status>
-featured_image: <提取到的特色图片链接，找不到则省略或留空>
 ---
 
 ![featured image](<featured_image_url>)
