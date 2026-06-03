@@ -1,6 +1,6 @@
 # My AI Skills
 
-这是一个个人 Agent Skills 仓库，面向 OpenAI Codex 和 Claude Code 使用。它把常见开发工作沉淀成可复用的 skill，例如 Git 提交、项目初始化、网页文章保存、Release 发布和 skill 文档生成。
+这是一个个人 Agent Skills 仓库，面向 OpenAI Codex 和 Claude Code 使用。它把常见工作沉淀成可复用的 skill，例如 Git 提交、项目初始化、网页文章保存、学习笔记生成、PPTX 教程课件制作、Release 发布和 skill 文档生成。
 
 你可以把它理解为一组“给 AI 助手看的工作说明书”：安装后，在 Codex 或 Claude Code 里直接用自然语言说出需求，AI 会自动选择合适的 skill 执行。
 
@@ -71,9 +71,12 @@ python install-xmh-skills/scripts/install.py
 | `git-commit` | 分析改动、生成 Conventional Commit、提交并推送 | `提交改动`、`commit`、`推送` |
 | `install-xmh-skills` | 安装或更新本仓库 skills | `安装 skills`、`更新 skills` |
 | `article-to-markdown` | 把网页文章保存为 Markdown | `保存文章 <url>`、`网页转 markdown` |
+| `blog-notes` | 生成用于记录学习知识点的 Markdown 笔记 | `Blog-Notes`、`写学习笔记`、`整理知识点` |
+| `better-prompt` | 把简单提示词重构成清晰、可执行的高质量 prompt | `优化prompt`、`重构prompt`、`生成高质量prompt` |
 | `write-skill-readme` | 为 skill 生成用户友好的 README | `生成技能 README`、`更新技能文档` |
 | `git-publish-release` | 生成 Release Notes 并发布 GitHub Release | `发布项目到 GitHub`、`创建 GitHub Release` |
 | `init-project` | 生成 AGENTS.md、CLAUDE.md、README、CHANGELOG 等项目指令文件 | `初始化项目`、`生成 AGENTS.md` |
+| `pptx` | 制作教程类 PPTX、课件和培训材料 | `制作ppt`、`生成pptx`、`做一个教程类PPT` |
 
 ## 推荐工作流
 
@@ -109,9 +112,12 @@ my-ai-skills/
 │   └── scripts/install.py
 ├── git-commit/
 ├── article-to-markdown/
+├── blog-notes/
+├── better-prompt/
 ├── write-skill-readme/
 ├── git-publish-release/
-└── init-project/
+├── init-project/
+└── pptx/
 ```
 
 每个 skill 至少包含：

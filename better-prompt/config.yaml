@@ -1,0 +1,40 @@
+prompt:
+  default_language: zh-CN
+  default_output_sections:
+    - 优化后的 Prompt
+    - 改进点
+    - 使用建议
+  prompt_block_language: text
+
+style:
+  tone: clear
+  structure: modular
+  preserve_user_intent: true
+  avoid_overengineering: true
+
+modules:
+  recommended_order:
+    - Role
+    - Context
+    - Task
+    - Requirements
+    - Input
+    - Output Format
+    - Quality Bar
+  optional_when_missing:
+    - Context
+    - Input
+    - Quality Bar
+
+rules:
+  ask_questions_max: 3
+  use_placeholders_for_missing_info: true
+  execute_optimized_prompt_by_default: false
+  only_prompt_when_requested: true
+
+quality_bar:
+  - directly_copyable
+  - clear_task
+  - explicit_output_format
+  - concrete_constraints
+  - preserves_original_intent

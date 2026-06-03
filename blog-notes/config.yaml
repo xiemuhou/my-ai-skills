@@ -1,0 +1,29 @@
+note:
+  default_status: publish
+  structure:
+    - 前言
+    - 主体
+    - 总结
+  frontmatter_fields:
+    - category
+    - tag
+    - status
+
+metadata:
+  category_max_terms: 2
+  tag_max_terms: 2
+  filename_max_chars: 50
+  extension: ".md"
+
+writing:
+  tone: clear
+  audience: future-self
+  preserve:
+    - key_terms
+    - commands
+    - code_snippets
+    - examples
+  avoid:
+    - long_unstructured_paragraphs
+    - fake_sources
+    - vague_summary

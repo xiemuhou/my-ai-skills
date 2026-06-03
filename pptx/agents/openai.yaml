@@ -1,0 +1,4 @@
+interface:
+  display_name: "PPTX Tutorial Deck"
+  short_description: "制作明亮技术课程网页风的教程类 PPTX"
+  default_prompt: "请使用 pptx skill 制作一份教程类 PPTX，使用明亮浅色、技术课程网页感模板，并在左下角融合 xmh 品牌 Logo。"
