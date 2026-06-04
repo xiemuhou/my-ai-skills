@@ -149,6 +149,18 @@ git log ${TARGET_TAG} --pretty=format:"%h|%s|%an|%ad" --date=short
 
 ### 创建 GitHub Release
 
+#### UTF-8 编码强制规范
+
+Release 标题和正文如果包含中文，必须把“编码正确”视为发布成功的必要条件。尤其在 Windows / PowerShell 环境中，不要把中文内容直接放进 shell 命令参数、PowerShell here-string 管道、`echo` 管道或未声明编码的临时脚本中，否则可能在 GitHub Release 页面变成 `????`。
+
+必须遵守：
+
+- Release Notes 必须先写入明确 UTF-8 编码的临时文件，再通过 `gh release create --notes-file` 或 `gh release edit --notes-file` 传递。
+- 生成临时文件时显式指定编码：Python 使用 `Path.write_text(content, encoding="utf-8")`；PowerShell 使用 `Set-Content -Encoding utf8`；Node.js 使用 `fs.writeFileSync(path, content, "utf8")`。
+- Release 标题如果包含中文，优先通过 GitHub API 或 UTF-8 脚本传递；不要在 PowerShell 命令行里直接拼接中文标题。
+- 如果必须调用 GitHub REST API，JSON 使用 UTF-8 字节发送：`json.dumps(payload, ensure_ascii=False).encode("utf-8")`，并设置 `Content-Type: application/json; charset=utf-8`。
+- 禁止使用 `echo "中文" | python -`、`@"中文"@ | python -`、`gh release create --notes "中文正文"` 这类依赖控制台编码的方式发布中文内容。
+
 ```bash
 # 将 Release Notes 写入临时文件（避免 shell 转义问题）
 NOTES_FILE=$(mktemp /tmp/release-notes-XXXXXX.md)
@@ -170,6 +182,21 @@ gh release create "$TARGET_TAG" \
 # 清理临时文件
 rm -f "$NOTES_FILE"
 ```
+
+#### 发布后乱码校验
+
+创建或更新 Release 后，必须读回 GitHub 上的实际内容再向用户报告成功：
+
+```bash
+gh release view "$TARGET_TAG" --json name,body,url
+```
+
+校验要求：
+
+- 标题和正文中应保留预期中文片段，例如 `核心亮点`、`主要更新`、版本标题中的中文说明。
+- 标题和正文不得出现大量 `????`，也不得出现 Unicode 替换字符 `�`。
+- 如果校验失败，必须立即使用 UTF-8 文件或 GitHub API 修复 Release，再重新读回确认；修复前不能向用户宣称发布成功。
+- 如果 `gh release view` 因终端编码无法可靠显示中文，改用 GitHub REST API 获取 JSON，并在 UTF-8 脚本内检查字符串内容。
 
 ## 输出格式
 
@@ -202,10 +229,14 @@ rm -f "$NOTES_FILE"
 | 网络请求失败 | 重试 3 次，仍失败则报错并给出手动创建指南 |
 | 权限不足 | 提示检查 `gh auth status` 及仓库权限 |
 | Release 已存在 | 询问用户是否覆盖（使用 `gh release edit`） |
+| Release 中文变成 `????` 或 `�` | 视为发布失败；立即用 UTF-8 文件/API 修复，并再次读回校验 |
 
 ## 实现注意事项
 
 1. **跨平台兼容**：始终使用正斜杠 `/` 处理路径
-2. **Notes 转义**：使用 `--notes-file` 传递临时文件，避免 shell 特殊字符转义问题
-3. **Git 远程解析**：`gh repo view` 自动处理 HTTPS 和 SSH 两种 remote URL 格式
-4. **认证管理**：`gh` CLI 使用系统 keychain 或 `~/.config/gh/hosts.yml` 存储凭证，无需手动管理 token
+2. **UTF-8 优先**：所有包含中文的 Release 标题、正文、临时文件和 API payload 都必须显式使用 UTF-8
+3. **Notes 转义**：使用 `--notes-file` 传递临时文件，避免 shell 特殊字符转义问题
+4. **发布后校验**：Release 创建或编辑后必须读回远端内容，确认中文没有变成 `????` 或 `�`
+5. **Git 远程解析**：`gh repo view` 自动处理 HTTPS 和 SSH 两种 remote URL 格式
+6. **认证管理**：`gh` CLI 使用系统 keychain 或 `~/.config/gh/hosts.yml` 存储凭证，无需手动管理 token
+7. **Tag 形式**：除非用户明确需要 annotated tag，否则发布 tag 优先使用 lightweight tag，避免 `git ls-remote --tags` 出现额外的 `^{}` 解引用行造成误判
