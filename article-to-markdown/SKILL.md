@@ -47,10 +47,15 @@ metadata:
 
 ### 阶段 2: 获取网页内容
 
-1. 使用 `WebFetch` 工具获取 URL 对应网页的完整内容
-2. WebFetch 会自动将 HTML 转换为 Markdown
-3. 同时尽量从页面 HTML 元数据中识别特色图片，例如 `og:image`、`twitter:image`、`image_src`、JSON-LD `image`
-4. 如果网页需要认证或获取失败，提示用户并退出
+1. 使用 `WebFetch` 工具获取 URL 对应网页内容；如果页面结构复杂，优先获取原始 HTML 再自行提取正文，不要只依赖可见正文转换结果。
+2. 对 WordPress 站点必须检查是否存在文章 ID，并优先尝试 WordPress REST API 完整正文：
+   - 从 `body` class 中识别 `postid-<id>`
+   - 或从 `link[rel="shortlink"]` 的 `?p=<id>` 识别
+   - 或从 canonical URL 末尾数字识别
+   - 请求 `/wp-json/wp/v2/posts/<id>`，优先使用 `content.rendered` 作为正文来源
+3. 如果 REST API 正文长度明显大于前端页面正文，必须使用 REST API 内容；这是 WordPress 主题、Argon 折叠块、懒加载和前端截断场景下避免漏正文的关键规则。
+4. 同时尽量从页面 HTML、REST API 元数据中识别特色图片，例如 `og:image`、`twitter:image`、`image_src`、JSON-LD `image`、`jetpack_featured_media_url`、`yoast_head_json.og_image`。
+5. 如果网页需要认证或获取失败，提示用户并退出
 
 ### 阶段 3: 内容处理
 
@@ -67,6 +72,13 @@ metadata:
 9. **自动生成标签**: 根据文章内容推断 category 和 tag（各不超过 2 个词语）
 10. **标题提升**: 如果文章中没有一级标题（`# `），将所有标题提高一级（`## ` → `# `，`### ` → `## `，以此类推）
 11. **保留原文内容**: 除上述移除项外，其余内容原样保留
+
+复杂页面保全规则：
+
+- **折叠区块只去外壳，不删正文**：遇到 Argon/Bootstrap/WordPress 折叠块，例如 `.collapse-block`、`.collapse-block-title`、`.collapse-block-body`、`.collapse`、`details` 等，只把折叠标题转为普通文本或加粗提示，并保留折叠块内部以及折叠块后面的全部正文。绝不能用“替换整个折叠容器”的方式处理，否则会误删后续正文。
+- **懒加载图片取真实地址**：如果图片 `src` 是 `data:image`、透明占位图或 loading SVG，必须优先取 `data-original`、`data-src`、`data-lazy-src`、父级 fancybox/lightbox 的 `href` 等真实图片链接。
+- **不要把占位图写入 Markdown**：最终文章图片不应出现 `![](data:image...)`。如果 `data:image` 出现在代码块中，例如 CSS 背景图示例，则属于原文代码，应保留。
+- **完整性校验**：转换后对比标题、正文长度、图片数量、文末标题/相关链接。若转换结果在折叠块附近结束，或明显少于 REST API/原始 HTML 正文，必须重新提取。
 
 特色图片处理规则：
 
@@ -100,6 +112,12 @@ status: <用户指定的 status>
 
 - 使用 `Write` 工具写入文件
 - 写入前必须自检：两个 `---` 之间只能包含 `category`、`tag`、`status`；特色图片必须在第二个 `---` 之后
+- 写入前必须做内容完整性自检：
+  - WordPress 文章已优先检查 `/wp-json/wp/v2/posts/<id>` 的 `content.rendered`
+  - 折叠块标题后面的正文仍然存在
+  - 文末内容、总结、相关链接等没有被截断
+  - 文章图片没有 `![](data:image...)` 占位图
+  - Markdown 文件大小、标题数量、图片数量与原始正文基本匹配
 - 写入前检查文件是否已存在，若存在则终止任务并提示"文件已存在: <路径>"
 
 ---
@@ -154,3 +172,5 @@ status: <用户指定的 status>
 7. **标题层级修正**: 无一级标题时自动提升所有标题层级
 8. **编码为 UTF-8**: 中文内容正确保存
 9. **特色图片不编造**: 只保存页面真实存在或用户明确指定的图片链接；找不到时跳过
+10. **WordPress 完整正文优先**: WordPress 页面必须优先核对 REST API 正文，避免主题折叠、摘要、懒加载或前端截断导致正文缺失
+11. **折叠内容保全**: 折叠、隐藏、展开区域的内容属于正文，必须保存；处理时只能展开/去壳，不能删除容器内或容器后的内容
