@@ -16,8 +16,8 @@ modes:
     auto_commit: true
     auto_push: true
   review:
-    prompt_stage: true
-    prompt_untracked: true
+    prompt_stage: false
+    prompt_untracked: false
     prompt_split: true
     prompt_commit: true
     prompt_push: true
